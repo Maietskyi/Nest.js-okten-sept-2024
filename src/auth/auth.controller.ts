@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -20,8 +27,8 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('profile')
-  getProfile(@Req() req: UserRequest) {
+  @Get('profile')
+  getProfile(@Request() req: UserRequest) {
     return req.user;
   }
 }
