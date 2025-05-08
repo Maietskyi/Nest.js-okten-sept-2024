@@ -61,14 +61,6 @@ export class AuthService {
     };
   }
 
-  // async getProfile(userId: number): Promise<User> {
-  //   const user = await this.userRepository.findOneBy({ id: userId });
-  //   if (!user) {
-  //     throw new UnauthorizedException('User not found');
-  //   }
-  //   return user;
-  // }
-
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
     const { refreshToken } = refreshTokenDto;
 
