@@ -33,6 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token is blocked or invalid');
     }
 
-    return payload;
+    return tokenEntity.user;
   }
 }
