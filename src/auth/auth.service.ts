@@ -8,11 +8,13 @@ import { LoginDto } from './dto/login.dto';
 import { Token } from './entities/tocken.entity';
 import { ConfigService } from '@nestjs/config';
 import { IToken } from './inretfaces/tokens.interface';
+import { RefreshTokenDto } from './dto/refresh.token.dto';
+import { IJWTPayload } from './inretfaces/jwt.payload.interface';
 
 @Injectable()
 export class AuthService {
-  private accessTokenExpiresIn: number;
-  private refreshTokenExpiresIn: number;
+  private readonly accessTokenExpiresIn: number;
+  private readonly refreshTokenExpiresIn: number;
 
   constructor(
     @InjectRepository(User)
@@ -36,7 +38,7 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<IToken> {
     const user = await this.validateUser(loginDto.username, loginDto.password);
 
-    const jti = Math.random().toString(36).substring(10);
+    const jti = Math.random().toString(36).substring(2);
     const payload = { userId: user.id, username: user.username, jti };
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: `${this.accessTokenExpiresIn}s`,
@@ -60,6 +62,70 @@ export class AuthService {
     };
   }
 
+  async refresh(refreshTokenDto: RefreshTokenDto): Promise<IToken> {
+    const { refreshToken } = refreshTokenDto;
+
+    try {
+      this.jwtService.verify<IJWTPayload>(refreshToken);
+
+      const tokenEntity = await this.tokenRepository.findOne({
+        where: { refreshToken, isBlocked: false },
+        relations: ['user'],
+      });
+
+      if (!tokenEntity || tokenEntity.refreshTokenExpiresAt < new Date()) {
+        throw new UnauthorizedException('Invalid or expired refresh token');
+      }
+
+      tokenEntity.isBlocked = true;
+      await this.tokenRepository.save(tokenEntity);
+
+      const jti = Math.random().toString(36).substring(10);
+      const payload = {
+        userId: tokenEntity.user.id,
+        username: tokenEntity.user.username,
+        jti,
+      };
+
+      const newAccessToken = this.jwtService.sign(payload, {
+        expiresIn: `${this.accessTokenExpiresIn}s`,
+      });
+      const newRefreshToken = this.jwtService.sign(payload, {
+        expiresIn: `${this.refreshTokenExpiresIn}s`,
+      });
+
+      await this.saveTokens(
+        tokenEntity.user,
+        newAccessToken,
+        newRefreshToken,
+        this.accessTokenExpiresIn,
+        this.refreshTokenExpiresIn,
+        jti,
+      );
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+  }
+
+  async logOut(refreshTokenDto: RefreshTokenDto): Promise<void> {
+    const { refreshToken } = refreshTokenDto;
+
+    const tokenEntity = await this.tokenRepository.findOne({
+      where: { refreshToken, isBlocked: false },
+    });
+
+    if (tokenEntity) {
+      tokenEntity.isBlocked = true;
+      await this.tokenRepository.save(tokenEntity);
+    }
+  }
+
   private async saveTokens(
     user: User,
     accessToken: string,
@@ -71,11 +137,9 @@ export class AuthService {
     const tokenEntity = this.tokenRepository.create({
       accessToken,
       refreshToken,
-      accessTokenExpiresAt: new Date(
-        Date.now() + this.accessTokenExpiresIn * 1000,
-      ),
+      accessTokenExpiresAt: new Date(Date.now() + accessTokenExpiresIn * 1000),
       refreshTokenExpiresAt: new Date(
-        Date.now() + this.refreshTokenExpiresIn * 1000,
+        Date.now() + refreshTokenExpiresIn * 1000,
       ),
       user,
       jti,
