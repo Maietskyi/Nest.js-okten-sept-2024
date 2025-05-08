@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { Token } from './entities/tocken.entity';
+import { Token } from './entities/token.entity';
 import { ConfigService } from '@nestjs/config';
-import { IToken } from './inretfaces/tokens.interface';
+import { ITokens } from './inretfaces/tokens.interface';
 import { RefreshTokenDto } from './dto/refresh.token.dto';
 import { IJWTPayload } from './inretfaces/jwt.payload.interface';
 
@@ -30,23 +30,23 @@ export class AuthService {
       this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_TIME') || 0;
   }
 
-  async register(register: RegisterDto): Promise<User> {
-    const user = this.userRepository.create(register);
+  async register(registerDto: RegisterDto): Promise<User> {
+    const user = this.userRepository.create(registerDto);
     return this.userRepository.save(user);
   }
 
-  async login(loginDto: LoginDto): Promise<IToken> {
+  async login(loginDto: LoginDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto.username, loginDto.password);
 
     const jti = Math.random().toString(36).substring(2);
     const payload = { userId: user.id, username: user.username, jti };
+
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: `${this.accessTokenExpiresIn}s`,
     });
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: `${this.refreshTokenExpiresIn}s`,
     });
-
     await this.saveTokens(
       user,
       accessToken,
@@ -55,14 +55,13 @@ export class AuthService {
       this.refreshTokenExpiresIn,
       jti,
     );
-
     return {
       accessToken,
       refreshToken,
     };
   }
 
-  async refresh(refreshTokenDto: RefreshTokenDto): Promise<IToken> {
+  async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
     const { refreshToken } = refreshTokenDto;
 
     try {
@@ -80,7 +79,7 @@ export class AuthService {
       tokenEntity.isBlocked = true;
       await this.tokenRepository.save(tokenEntity);
 
-      const jti = Math.random().toString(36).substring(10);
+      const jti = Math.random().toString(36).substring(2);
       const payload = {
         userId: tokenEntity.user.id,
         username: tokenEntity.user.username,
@@ -156,6 +155,7 @@ export class AuthService {
     if (!user || !(await user.validatePassword(password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
     return user;
   }
 }

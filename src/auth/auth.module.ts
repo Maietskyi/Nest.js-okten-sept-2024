@@ -7,7 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
-import { Token } from './entities/tocken.entity';
+import { Token } from './entities/token.entity';
 
 @Module({
   imports: [
@@ -22,7 +22,6 @@ import { Token } from './entities/tocken.entity';
     }),
     TypeOrmModule.forFeature([User, Token]),
   ],
-
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
 })

@@ -17,23 +17,25 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('Tables')
 @Controller('tables')
 export class TablesController {
-  constructor(private readonly tableService: TablesService) {}
-
-  @ApiOperation({ summary: 'Create new table' })
-  @ApiResponse({ status: 201, type: ResponseTableDTO })
+  constructor(private readonly tablesService: TablesService) {}
+  @ApiOperation({ summary: 'create new table' })
+  @ApiResponse({
+    status: 201,
+    type: ResponseTableDTO,
+  })
   @Post()
-  async create(@Body() createTableDto: CreateTableDto): Promise<Table> {
-    return await this.tableService.create(createTableDto);
+  async create(@Body() crateTableDto: CreateTableDto): Promise<Table> {
+    return await this.tablesService.create(crateTableDto);
   }
 
   @Get()
   async findAll(): Promise<ResponseTableDTO[]> {
-    return this.tableService.findAll();
+    return this.tablesService.findAll();
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string) {
-    return this.tableService.findById(+id);
+  async getById(@Param('id') id: string): Promise<Table> {
+    return this.tablesService.findById(+id);
   }
 
   @Patch(':id')
@@ -41,11 +43,11 @@ export class TablesController {
     @Param('id') id: string,
     @Body() updateTableDto: UpdateTableDto,
   ): Promise<Table> {
-    return this.tableService.update(+id, updateTableDto);
+    return this.tablesService.update(+id, updateTableDto);
   }
 
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return this.tableService.delete(+id);
+    return this.tablesService.delete(+id);
   }
 }

@@ -31,10 +31,12 @@ export class AuthController {
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto);
   }
+
   @Post('logout')
   async logOut(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.logOut(refreshTokenDto);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Request() req: UserRequest) {

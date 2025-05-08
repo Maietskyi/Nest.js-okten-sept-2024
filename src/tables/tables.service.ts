@@ -12,8 +12,8 @@ export class TablesService {
     private readonly tableRepository: Repository<Table>,
   ) {}
 
-  async create(CreateTableDto: CreateTableDto): Promise<Table> {
-    const newTable = this.tableRepository.create(CreateTableDto);
+  async create(createTableDto: CreateTableDto): Promise<Table> {
+    const newTable = this.tableRepository.create(createTableDto);
     return this.tableRepository.save(newTable);
   }
 
@@ -25,14 +25,14 @@ export class TablesService {
     const table = await this.tableRepository.findOneBy({ id });
 
     if (!table) {
-      throw new NotFoundException(`Table with is id ${id} not found`);
+      throw new NotFoundException(`Table with this ID ${id} not found`);
     }
 
     return table;
   }
 
-  async update(id: number, updateTableDTO: UpdateTableDto): Promise<Table> {
-    await this.tableRepository.update(id, updateTableDTO);
+  async update(id: number, updateTableDto: UpdateTableDto): Promise<Table> {
+    await this.tableRepository.update(id, updateTableDto);
     return this.findById(id);
   }
 
