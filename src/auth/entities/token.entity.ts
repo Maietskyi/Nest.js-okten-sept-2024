@@ -24,6 +24,6 @@ export class Token {
   @Column()
   jti: string;
 
-  @ManyToOne(() => User, (user: User) => user.tokens)
+  @ManyToOne(() => User, (user) => user.tokens)
   user: User;
 }
