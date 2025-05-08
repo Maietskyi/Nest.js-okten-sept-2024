@@ -2,11 +2,11 @@ import {
   BeforeInsert,
   Column,
   Entity,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Token } from './tocken.entity';
+import { Token } from './token.entity';
 
 @Entity()
 export class User {
@@ -24,7 +24,7 @@ export class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  @OneToOne(() => Token, (token) => token.user)
+  @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
 
   async validatePassword(password: string): Promise<boolean> {
