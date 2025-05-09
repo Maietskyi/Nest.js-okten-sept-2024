@@ -9,6 +9,7 @@ export default new DataSource({
   type: envService.dbType as 'mysql',
   host: envService.dbHost,
   port: envService.dbPort,
+
   username: envService.dbUsername,
   password: envService.dbPassword,
   database: envService.dbDatabase,
