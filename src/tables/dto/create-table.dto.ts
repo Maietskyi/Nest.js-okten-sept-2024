@@ -1,11 +1,11 @@
 import {
-  IsNumber,
-  IsOptional,
   IsString,
-  MaxLength,
+  IsNumber,
   MinLength,
+  MaxLength,
   Min,
   Max,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 

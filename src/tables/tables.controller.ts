@@ -1,17 +1,17 @@
 import {
-  Patch,
-  Post,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Delete,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { TablesService } from './tables.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { Table } from './entities/table.entity';
+import { TablesService } from './tables.service';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { ResponseTableDTO } from './dto/response-table.dto';
+import { ResponseTableDto } from './dto/response-table.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Tables')
@@ -21,7 +21,7 @@ export class TablesController {
   @ApiOperation({ summary: 'create new table' })
   @ApiResponse({
     status: 201,
-    type: ResponseTableDTO,
+    type: ResponseTableDto,
   })
   @Post()
   async create(@Body() crateTableDto: CreateTableDto): Promise<Table> {
@@ -29,7 +29,7 @@ export class TablesController {
   }
 
   @Get()
-  async findAll(): Promise<ResponseTableDTO[]> {
+  async findAll(): Promise<ResponseTableDto[]> {
     return this.tablesService.findAll();
   }
 
