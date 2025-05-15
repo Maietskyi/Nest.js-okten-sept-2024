@@ -21,7 +21,7 @@ export class User {
 
   @BeforeInsert()
   async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, '10');
   }
 
   @OneToMany(() => Token, (token) => token.user)
