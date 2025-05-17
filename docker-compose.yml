@@ -4,13 +4,16 @@ services:
       context: .
     env_file:
       - .env
+    volumes:
+      - ./backend:/app
+      - .app/node_modules
     ports:
       - "3001:3001"
     depends_on:
       db:
         condition: service_healthy
     command: >
-      sh -c "npm run typeorm -- migration:run --dataSource ./dist/ormconfig.js && node dist/src/main.js"
+      sh -c "npm run migration:run && npm run start:dev"
 
   db:
     image: mysql:8
