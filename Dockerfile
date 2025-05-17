@@ -8,3 +8,5 @@ WORKDIR /app
 COPY backend/package.json ./
 RUN npm i --production
 
+RUN npm i -g @nestjs/cli
+
