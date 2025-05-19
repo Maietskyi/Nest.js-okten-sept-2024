@@ -2,6 +2,8 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
+"/c/Program Files/7-Zip/7z.exe" a -tzip aws.zip ./backend ./client ./mysql_db ./.env ./docker-compose.yml ./Dockerfile ./nginx.conf -xr\!backend/node_modules/*
+
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
